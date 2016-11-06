@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block page-header %}
+客户信息列表
+<a href="{% url 'customer_add' %}">
+    <button type="button" class="btn btn-default pull-right">
+      <span class="glyphicon glyphicon-plus"></span> ADD客户
+    </button>
+</a>
+{% endblock %}
+
+{% block page-content %}
+<div class="panel panel-default">
+    <div class="panel-heading">Panel heading</div>
+    <div class="panel-body">
+        <p>...</p>
+    </div>
+    <table class="table table-hover">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>QQ</th>
+        <th>姓名</th>
+        <th>来源渠道</th>
+        <th>咨询课程</th>
+        <th>课程类型</th>
+        <th>状态</th>
+        <th>课程顾问</th>
+        <th>日期</th>
+        <th>客户备注</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for customer in customer_list %}
+        <tr>
+            <td><a href="{% url 'customer_detail' customer.id %}">{{ customer.id }}</a></td>
+            <td>{{ customer.qq }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.source }}</td>
+            <td>{{ customer.course }}</td>
+            <td>{{ customer.get_class_type_display }}</td>
+            <td class="{{ customer.status }}">{{ customer.get_status_display }}</td>
+            <td>{{ customer.consultant }}</td>
+            <td>{{ customer.date }}</td>
+            <td>{{ customer.customer_note|truncatechars:30 }}</td>
+            </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <div class="panel-footer">
+        <!--整个分页功能都做成标签-->
+        <nav>{% pagination_bar customer_list %}</nav>
+    </div>
+</div>
+<div class="">
+
+    <!--分页中的部分功能做成标签-->
+    <nav>
+        <ul class="pagination">
+            {% if customer_list.has_previous %}
+            <li class=""><a href="?page={{ customer_list.previous_page_number }}">&laquo;</a></li>
+            {% endif %}
+            {% for page_num in customer_list.paginator.page_range %}
+                {% guess_page customer_list.number page_num %}
+
+            {% endfor %}
+            {% if customer_list.has_next %}
+            <li class=""><a href="?page={{ customer_list.next_page_number }}">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <!--不使用自定义标签，显示所有页面-->
+    <nav>
+        <ul class="pagination">
+            {% if customer_list.has_previous %}
+            <li class=""><a href="?page={{ customer_list.previous_page_number }}">&laquo;</a></li>
+            {% endif %}
+            {% for page_num in customer_list.paginator.page_range %}
+                <li class="{% if page_num == customer_list.number %}active{% endif %}"><a href="?page={{ page_num }}">{{ page_num }}</a></li>
+            {% endfor %}
+            {% if customer_list.has_next %}
+            <li class=""><a href="?page={{ customer_list.next_page_number }}">&raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <!--使用默认的简单分页-->
+    <span class="">
+        {% if customer_list.has_previous %}
+        <a href="?page={{ customer_list.previous_page_number }}">previous</a>
+        {% endif %}
+        <span class="">
+            Page {{ customer_list.number }} of {{ customer_list.paginator.num_pages }}
+        </span>
+        {% if customer_list.has_next %}
+         <a href="?page={{ customer_list.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+{% endblock %}

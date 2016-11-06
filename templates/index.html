@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Great CRM</h1>
+{% block page-container %}
+Welcome to our CRM!
+<div>
+{% if request.user.is_authenticated %}
+<span>{{ request.user.userprofile.name }}</span>
+{% else %}
+<span>登录注册</span>
+{% endif %}
+</div>
+<hr/>
+<a href="/accounts/logout/">退出系统</a>
+{% endblock %}
+</body>
+</html>
