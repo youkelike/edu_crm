@@ -4,6 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
+#定义在外面就不能通过各模型类取到这个变量了
 class_type_choices = (
     ('online',u'网络班'),
     ('offline_weekend',u'周末面授班'),
@@ -64,14 +65,14 @@ class Customer(models.Model):
     name = models.CharField(u'姓名',max_length=32,blank=True,null=True)
     phone = models.BigIntegerField(u'手机',blank=True,null=True)
     stu_id = models.CharField(u'学号',blank=True,null=True,max_length=64)
-    source_type = (
+    source_choices = (
         ('qq',u'qq群'),
         ('referral',u'内部转介绍'),
         ('51cto',u'51cto'),
         ('agent',u'招生代理'),
         ('others',u'其它'),
     )
-    source = models.CharField(u'客户来源',max_length=64,choices=source_type,default='qq')
+    source = models.CharField(u'客户来源',max_length=64,choices=source_choices,default='qq')
     #加一个推荐人字段，关联到这个表的其它记录,self要加引号
     referral_from = models.ForeignKey('self',
                                       verbose_name=u'转介绍自学员',
@@ -82,15 +83,20 @@ class Customer(models.Model):
                                       related_name='internal_referral')
 
     course = models.ForeignKey(Course,verbose_name=u'咨询课程')
+    class_type_choices = (
+        ('online', u'网络班'),
+        ('offline_weekend', u'周末面授班'),
+        ('offline_fulltime', u'脱产面授班'),
+    )
     class_type = models.CharField(u'班级类型',max_length=64,choices=class_type_choices)
     customer_note = models.TextField(u'客户咨询详情',help_text=u'客户咨询的对话记录')
-    status_choice = (
+    status_choices = (
         ('signed',u'已报名'),
         ('unregistered',u'未报名'),
         ('graduated',u'已毕业'),
         ('dropoff',u'已退学'),
     )
-    status = models.CharField(u'状态',choices=status_choice,max_length=64,default='unregistered')
+    status = models.CharField(u'客户状态',choices=status_choices,max_length=64,default='unregistered')
     consultant = models.ForeignKey(UserProfile,verbose_name=u'课程顾问')
     date = models.DateField(u'咨询日期',auto_now_add=True)
     #多对多或外键字段可以不填的情况，只要加上blank=True

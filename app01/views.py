@@ -2,10 +2,13 @@ from django.shortcuts import render,HttpResponseRedirect,redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
-from app01 import models
 
+from app01 import models
 from app01 import forms
 from app01.permissions import check_permission
+from stu_man import settings
+from django.db.models import Q
+
 # Create your views here.
 
 @login_required
@@ -36,9 +39,29 @@ def dashboard(request):
 
 @check_permission
 def customers(request):
+    # 取出要过滤的字段值
+    filter_dic = forms.get_filter_fields(models.Customer)
+
     page = request.GET.get('page')
 
-    customer_list = models.Customer.objects.all()
+    #构建过滤条件
+    q = Q()
+    q.connector = 'AND'
+    filter_fields = settings.FILTER_FIELDS['Customer']
+    search_str = ''
+    search_val_dic = {}
+    for field_name in filter_fields:
+        search_val = request.GET.get(field_name)
+        if search_val is not None:
+            search_val_dic[field_name] = search_val
+            print('***search_str:',search_val)
+            q.children.append((field_name,search_val))
+            search_str += '&%s=%s' % (field_name,search_val)#用在分页功能上
+    if len(q.children) > 0:
+        customer_list = models.Customer.objects.filter(q)
+    else:
+        customer_list = models.Customer.objects.all()
+
     #指定每页记录数量，生成实例
     paginator = Paginator(customer_list,3)
     try:
@@ -46,12 +69,21 @@ def customers(request):
         customer_objs = paginator.page(page)
     except PageNotAnInteger:
         #页码不是整数
-        customer_objs = paginator.page(1)
+        page = 1
     except EmptyPage:
         #页码超出范围
-        customer_objs = paginator.page(paginator.num_pages)
+        page = paginator.num_pages
+    customer_objs = paginator.page(page)
 
-    return render(request,'app01/customers.html',{'customer_list':customer_objs})
+
+
+    return render(request,'app01/customers.html',{
+        'customer_list':customer_objs,
+        'filter_dic':filter_dic,
+        'page':page,
+        'search_str':search_str,
+        'search_val_dic':search_val_dic,
+    })
 
 @check_permission
 def customer_detail(request,customer_id):

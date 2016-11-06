@@ -1,0 +1,22 @@
+.signed{
+  background-color: #31b0d5;
+}
+.unregistered{
+  background-color: #3c763d;
+}
+.graduated{
+  background-color: #9d9d9d;
+}
+.dropoff{
+  background-color: #66512c;
+}
+
+#panel-heading{
+  float:none;overflow: hidden;
+}
+  #panel-heading .search-button,#panel-heading .search-more-button{
+    padding-left: 0px;
+  }
+  .btn-toolbar{
+    margin-bottom:5px;
+  }

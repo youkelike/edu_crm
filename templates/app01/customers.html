@@ -12,9 +12,42 @@
 
 {% block page-content %}
 <div class="panel panel-default">
-    <div class="panel-heading">Panel heading</div>
-    <div class="panel-body">
-        <p>...</p>
+
+    <div class="panel-heading" id="panel-heading">
+        <div class="col-md-9 " >
+            <div class="col-md-5">
+                <form action="" method="GET">
+                    <input class="form-control" type="text" placeholder="输入QQ号">
+                    <input type="submit" id="submit" class="hide"/>
+                </form>
+            </div>
+            <div class="col-md-3 search-button">
+                <button type="button" id="btn-submit" class="btn btn-default">
+                    <span class="glyphicon glyphicon-search"></span> 搜索
+                </button>
+                <button type="button" id='btn-filter' class="btn btn-default">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-body hide">
+        {% for item in filter_dic %}
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group"><button type="button" class="btn btn-link">{{ item.name }}</button></div>
+            <div class="btn-group">
+                <a class="" href="{% url 'customer_list' %}?page={{ page }}{{ item.field_name|guess_param:search_val_dic }}"><button id="" type="button" class="btn btn-default">全部</button></a>
+                {% for tag in item.tags %}
+                    {% if item.is_relation %}
+                        <a class="" href="{% url 'customer_list' %}?page={{ page }}&{{ item.field_name }}={{ tag.0 }}{{ item.field_name|guess_param:search_val_dic }}"><button id="{{ item.field_name }}-{{ tag.0 }}" type="button" class="btn btn-default">{{ tag.1 }}({{ tag.2 }})</button></a>
+                    {% else %}
+                        <a class="" href="{% url 'customer_list' %}?page={{ page }}&{{ item.field_name }}={{ tag.0 }}{{ item.field_name|guess_param:search_val_dic }}"><button id="{{ item.field_name }}-{{ tag.0 }}" type="button" class="btn btn-default">{{ tag.2 }}({{ tag.1 }})</button></a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
     <table class="table table-hover">
     <thead>
@@ -22,10 +55,10 @@
         <th>ID</th>
         <th>QQ</th>
         <th>姓名</th>
-        <th>来源渠道</th>
+        <th>客户来源</th>
         <th>咨询课程</th>
-        <th>课程类型</th>
-        <th>状态</th>
+        <th>班级类型</th>
+        <th>客户状态</th>
         <th>课程顾问</th>
         <th>日期</th>
         <th>客户备注</th>
@@ -50,7 +83,7 @@
 </table>
     <div class="panel-footer">
         <!--整个分页功能都做成标签-->
-        <nav>{% pagination_bar customer_list %}</nav>
+        <nav>{% pagination_bar customer_list search_str %}</nav>
     </div>
 </div>
 <div class="">
@@ -59,14 +92,14 @@
     <nav>
         <ul class="pagination">
             {% if customer_list.has_previous %}
-            <li class=""><a href="?page={{ customer_list.previous_page_number }}">&laquo;</a></li>
+            <li class=""><a href="?page={{ customer_list.previous_page_number }}{{ search_str }}">&laquo;</a></li>
             {% endif %}
             {% for page_num in customer_list.paginator.page_range %}
-                {% guess_page customer_list.number page_num %}
+                {% guess_page customer_list.number page_num search_str %}
 
             {% endfor %}
             {% if customer_list.has_next %}
-            <li class=""><a href="?page={{ customer_list.next_page_number }}">&raquo;</a></li>
+            <li class=""><a href="?page={{ customer_list.next_page_number }}{{ search_str }}">&raquo;</a></li>
             {% endif %}
         </ul>
     </nav>
@@ -98,3 +131,4 @@
     </span>
 </div>
 {% endblock %}
+

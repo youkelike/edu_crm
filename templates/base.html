@@ -8,7 +8,7 @@
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="/static/bootstrap/css/dashboard.css" rel="stylesheet">
-    <link href="/static/bootstrap/css/custom.css" rel="stylesheet">
+    <link href="/static/css/custom.css" rel="stylesheet">
   </head>
 
   <body>
@@ -64,5 +64,24 @@
 
     <script src="/static/bootstrap/js/jquery.min.js"></script>
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    {% block script %}
+    <script>
+        $(function(){
+            var search = location.search.split('&')
+            console.log(search)
+            if(search.length>1){
+                $('.panel-body').removeClass('hide')
+                for(var i=1,l=search.length;i<l;i++){
+                    id = search[i].replace('=','-')
+                    console.log(id)
+                    $('#'+id).addClass('active')
+                }
+            }
 
+        })
+
+
+    </script>
+    {% endblock %}
 </body></html>

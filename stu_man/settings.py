@@ -124,3 +124,9 @@ STATIC_URL = '/static/'#这个是下面的别名
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'statics'),
 ]
+
+
+FILTER_FIELDS = {
+    'Customer':['consultant_id','course_id','class_type','status','source'],#外键关联字段名后要加'_id'
+
+}
