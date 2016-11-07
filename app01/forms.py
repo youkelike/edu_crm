@@ -4,7 +4,9 @@ from django.db.models import Count
 from stu_man import settings
 
 def get_filter_fields(cls):
-    filter_fields = settings.FILTER_FIELDS[cls.__name__]
+    filter_fields = settings.FILTER_FIELDS.get(cls.__name__)
+    if filter_fields is None:
+        return None
     print('***filter fields:', filter_fields)
     field_list = cls._meta.local_fields
 
@@ -50,3 +52,88 @@ class CustomerModelForm(ModelForm):
         for field_name in self.base_fields:
             field = self.base_fields[field_name]
             field.widget.attrs.update({'class':'form-control'})
+
+class CourseModelForm(ModelForm):
+    class Meta:
+        model = models.Course
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(CourseModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class SchoolModelForm(ModelForm):
+    class Meta:
+        model = models.School
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(SchoolModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class UserProfileModelForm(ModelForm):
+    class Meta:
+        model = models.UserProfile
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(UserProfileModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class CourseRecordModelForm(ModelForm):
+    class Meta:
+        model = models.CourseRecord
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(CourseRecordModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class StudyRecordModelForm(ModelForm):
+    class Meta:
+        model = models.StudyRecord
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(StudyRecordModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class ConsultRecordModelForm(ModelForm):
+    class Meta:
+        model = models.ConsultRecord
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(ConsultRecordModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+
+class ClassListModelForm(ModelForm):
+    class Meta:
+        model = models.ClassList
+        exclude = ()
+    # 给模式表单中的字段加自定义样式
+    def __init__(self, *args, **kwargs):
+        super(ClassListModelForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.base_fields:
+            field = self.base_fields[field_name]
+            field.widget.attrs.update({'class': 'form-control'})
+

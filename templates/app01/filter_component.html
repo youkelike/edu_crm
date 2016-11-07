@@ -1,0 +1,19 @@
+{% load custom_tags %}
+
+<div class="panel-body hide">
+    {% for item in filter_dic %}
+    <div class="btn-toolbar" role="toolbar">
+        <div class="btn-group"><button type="button" class="btn btn-link">{{ item.name }}</button></div>
+        <div class="btn-group">
+            <a class="" href="{% url url_alias %}?page={{ page }}{{ item.field_name|guess_param:search_val_dic }}"><button id="" type="button" class="btn btn-default">全部</button></a>
+            {% for tag in item.tags %}
+                {% if item.is_relation %}
+                    <a class="" href="{% url url_alias %}?page={{ page }}&{{ item.field_name }}={{ tag.0 }}{{ item.field_name|guess_param:search_val_dic }}"><button id="{{ item.field_name }}-{{ tag.0 }}" type="button" class="btn btn-default">{{ tag.1 }}({{ tag.2 }})</button></a>
+                {% else %}
+                    <a class="" href="{% url url_alias %}?page={{ page }}&{{ item.field_name }}={{ tag.0 }}{{ item.field_name|guess_param:search_val_dic }}"><button id="{{ item.field_name }}-{{ tag.0 }}" type="button" class="btn btn-default">{{ tag.2 }}({{ tag.1 }})</button></a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

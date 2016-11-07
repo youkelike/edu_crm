@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block page-header %}
-客户详细信息
+新增课程信息
 {% endblock %}
 
 {% block page-content %}
-    <form action="" method="post" class="form-horizontal">
+    <form action="{% url 'course_add' %}" method="post" class="form-horizontal">
         {% include 'app01/form_content.html' %}
     </form>
 

@@ -37,14 +37,13 @@ def dashboard(request):
 
     return render(request,'app01/dashboard.html')
 
-@check_permission
-def customers(request):
+def build_search_param(request,cls):
     # 取出要过滤的字段值
-    filter_dic = forms.get_filter_fields(models.Customer)
+    filter_dic = forms.get_filter_fields(cls)
 
     page = request.GET.get('page')
 
-    #构建过滤条件
+    # 构建过滤条件
     q = Q()
     q.connector = 'AND'
     filter_fields = settings.FILTER_FIELDS['Customer']
@@ -54,62 +53,72 @@ def customers(request):
         search_val = request.GET.get(field_name)
         if search_val is not None:
             search_val_dic[field_name] = search_val
-            print('***search_str:',search_val)
-            q.children.append((field_name,search_val))
-            search_str += '&%s=%s' % (field_name,search_val)#用在分页功能上
-    if len(q.children) > 0:
-        customer_list = models.Customer.objects.filter(q)
-    else:
-        customer_list = models.Customer.objects.all()
+            print('***search_str:', search_val)
+            q.children.append((field_name, search_val))
+            search_str += '&%s=%s' % (field_name, search_val)  # 用在分页功能上
 
-    #指定每页记录数量，生成实例
-    paginator = Paginator(customer_list,3)
+    # 找出搜索框输入,约定变量名为：find__字段名
+    print('***GET:', request.GET)
+    find_list = []
+    for f_dic in request.GET.items():
+        if f_dic[0].startswith('find__') and len(f_dic[1]) > 0:
+            print('**********find str:', f_dic)
+            q.children.append(('%s__contains' % f_dic[0].replace('find__',''), f_dic[1]))
+            find_list = f_dic
+
+    if len(q.children) > 0:
+        data_obj = cls.objects.filter(q)
+    else:
+        data_obj = cls.objects.all()
+
+    # 指定每页记录数量，生成实例
+    paginator = Paginator(data_obj, 3)
     try:
         # 取指定页的数据对象
-        customer_objs = paginator.page(page)
+        data_list = paginator.page(page)
     except PageNotAnInteger:
-        #页码不是整数
-        page = 1
+        # 页码不是整数
+        data_list = paginator.page(1)
     except EmptyPage:
-        #页码超出范围
-        page = paginator.num_pages
-    customer_objs = paginator.page(page)
+        # 页码超出范围
+        data_list = paginator.page(paginator.num_pages)
 
-
-
-    return render(request,'app01/customers.html',{
-        'customer_list':customer_objs,
+    return {
+        'data_list':data_list,
         'filter_dic':filter_dic,
         'page':page,
         'search_str':search_str,
         'search_val_dic':search_val_dic,
-    })
+        'find_list':find_list,
+        'url_alias':'%s_list' % cls.__name__.lower(),
+    }
 
 @check_permission
-def customer_detail(request,customer_id):
-    customer_obj = models.Customer.objects.get(id=customer_id)
+def customers(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.Customer)
+
+    return render(request,'app01/customers.html',data_dic)
+
+@check_permission
+def customer_detail(request,id):
+    data_obj = models.Customer.objects.get(id=id)
 
     if request.method == 'POST':
-        form = forms.CustomerModelForm(request.POST,instance=customer_obj)
+        form = forms.CustomerModelForm(request.POST,instance=data_obj)
         if form.is_valid():
             form.save()
-
             #动态跳转
-            base_url = '/'.join(request.path.split('/'))[:-2]
+            base_url = '/'.join(request.path.split('/')[:-2])
             return redirect(base_url)
-
     else:
-        form = forms.CustomerModelForm(instance=customer_obj)
+        form = forms.CustomerModelForm(instance=data_obj)
 
-    return render(request,'app01/customer_detail.html',{'customer_form':form})
+    return render(request,'app01/customer_detail.html',{'data_form':form})
 
 def customer_add(request):
     if request.method == 'POST':
         form = forms.CustomerModelForm(request.POST)
-        print('***post data:',request.POST)
-        print('***valid:',form.is_valid())
-        print('***errors:',form.errors)
-        print('***path:', request.path)
         if form.is_valid():
             form.save()
             base_url = '/'.join(request.path.split('/')[:-2])
@@ -117,4 +126,245 @@ def customer_add(request):
     else:
         form = forms.CustomerModelForm()
 
-    return render(request,'app01/customer_add.html',{'customer_form':form})
+    return render(request,'app01/customer_add.html',{'data_form':form})
+
+
+def courses(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.Course)
+
+    return render(request,'app01/courses.html',data_dic)
+
+def course_detail(request,id):
+    data_obj = models.Course.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.CourseModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.CourseModelForm(instance=data_obj)
+
+    return render(request,'app01/course_detail.html',{'data_form':form})
+
+def course_add(request):
+    if request.method == 'POST':
+        form = forms.CourseModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.CourseModelForm()
+
+    return render(request,'app01/course_add.html',{'data_form':form})
+
+
+def schools(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.School)
+
+    return render(request,'app01/schools.html',data_dic)
+
+def school_detail(request,id):
+    data_obj = models.School.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.SchoolModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.SchoolModelForm(instance=data_obj)
+
+    return render(request,'app01/school_detail.html',{'data_form':form})
+
+def school_add(request):
+    if request.method == 'POST':
+        form = forms.SchoolModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.SchoolModelForm()
+
+    return render(request,'app01/school_add.html',{'data_form':form})
+
+
+def userprofiles(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.UserProfile)
+
+    return render(request,'app01/userprofiles.html',data_dic)
+
+def userprofile_detail(request,id):
+    data_obj = models.UserProfile.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.UserProfileModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.UserProfileModelForm(instance=data_obj)
+
+    return render(request,'app01/userprofile_detail.html',{'data_form':form})
+
+def userprofile_add(request):
+    if request.method == 'POST':
+        form = forms.UserProfileModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.UserProfileModelForm()
+
+    return render(request,'app01/userprofile_add.html',{'data_form':form})
+
+
+def courserecords(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.CourseRecord)
+
+    return render(request,'app01/courserecords.html',data_dic)
+
+def courserecord_detail(request,id):
+    data_obj = models.CourseRecord.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.CourseRecordModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.CourseRecordModelForm(instance=data_obj)
+
+    return render(request,'app01/courserecord_detail.html',{'data_form':form})
+
+def courserecord_add(request):
+    if request.method == 'POST':
+        form = forms.CourseRecordModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.CourseRecordModelForm()
+
+    return render(request,'app01/courserecord_add.html',{'data_form':form})
+
+
+def studyrecords(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.StudyRecord)
+
+    return render(request,'app01/studyrecords.html',data_dic)
+
+def studyrecord_detail(request,id):
+    data_obj = models.StudyRecord.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.StudyRecordModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.StudyRecordModelForm(instance=data_obj)
+
+    return render(request,'app01/studyrecord_detail.html',{'data_form':form})
+
+def studyrecord_add(request):
+    if request.method == 'POST':
+        form = forms.StudyRecordModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.StudyRecordModelForm()
+
+    return render(request,'app01/studyrecord_add.html',{'data_form':form})
+
+
+def consultrecords(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.ConsultRecord)
+
+    return render(request,'app01/consultrecords.html',data_dic)
+
+def consultrecord_detail(request,id):
+    data_obj = models.ConsultRecord.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.ConsultRecordModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.ConsultRecordModelForm(instance=data_obj)
+
+    return render(request,'app01/consultrecord_detail.html',{'data_form':form})
+
+def consultrecord_add(request):
+    if request.method == 'POST':
+        form = forms.ConsultRecordModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.ConsultRecordModelForm()
+
+    return render(request,'app01/consultrecord_add.html',{'data_form':form})
+
+
+def classlists(request):
+    #通用方法构建查询结果
+    data_dic = build_search_param(request, models.ClassList)
+
+    return render(request,'app01/classlists.html',data_dic)
+
+def classlist_detail(request,id):
+    data_obj = models.ClassList.objects.get(id=id)
+    if request.method == 'POST':
+        form = forms.ClassListModelForm(request.POST,instance=data_obj)
+        if form.is_valid():
+            form.save()
+
+            #动态跳转
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.ClassListModelForm(instance=data_obj)
+
+    return render(request,'app01/classlist_detail.html',{'data_form':form})
+
+def classlist_add(request):
+    if request.method == 'POST':
+        form = forms.ClassListModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            base_url = '/'.join(request.path.split('/')[:-2])
+            return redirect(base_url)
+    else:
+        form = forms.ClassListModelForm()
+
+    return render(request,'app01/classlist_add.html',{'data_form':form})
+
+
+

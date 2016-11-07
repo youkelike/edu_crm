@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+
+{% block page-header %}
+咨询记录列表
+<a href="{% url 'consultrecord_add' %}">
+    <button type="button" class="btn btn-default pull-right">
+      <span class="glyphicon glyphicon-plus"></span> ADD咨询记录
+    </button>
+</a>
+{% endblock %}
+
+{% block page-content %}
+<div class="panel panel-default">
+
+    <div class="panel-heading" id="panel-heading">
+        <div class="col-md-9 " >
+            <form action="{% url url_alias %}?page=1{{ search_str }}" method="GET">
+                {% for input in search_val_dic.items %}
+                    <input type="hidden" name="{{ input.0 }}" value="{{ input.1 }}"/>
+                {% endfor %}
+                <div class="col-md-5">
+                    <input name="find__customer__qq" class="form-control" type="text" value="{{ find_list.1 }}" placeholder="输入客户qq" minlength="1" maxlength="20" required>
+                </div>
+                <div class="col-md-3 search-button">
+                    <button type="submit" id="btn-submit" class="btn btn-default">
+                        <span class="glyphicon glyphicon-search"></span> 搜索
+                    </button>
+                    {% if filter_dic %}
+                    <button type="button" id='btn-filter' class="btn btn-default">
+                        <span class="glyphicon glyphicon-cog"></span>
+                    </button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include 'app01/filter_component.html' %}
+
+    <table class="table table-hover">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>咨询客户</th>
+        <th>状态</th>
+        <th>跟进人</th>
+        <th>跟进日期</th>
+        <th>跟进内容</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for data in data_list %}
+        <tr>
+            <td><a href="{% url 'consultrecord_detail' data.id %}">{{ data.id }}</a></td>
+            <td>{{ data.customer }}</td>
+            <td>{{ data.get_status_display }}</td>
+            <td>{{ data.consultant }}</td>
+            <td>{{ data.date }}</td>
+            <td>{{ data.note }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+    <div class="panel-footer">
+        <!--整个分页功能都做成标签-->
+        <nav>{% pagination_bar data_list search_str find_list %}</nav>
+    </div>
+</div>
+
+{% endblock %}
+
