@@ -19,6 +19,13 @@ def guess_param(name,dic):
     print('***param:',param)
     return param
 
+@register.filter
+def show_m_2_m(obj):
+    strs = []
+    for o in obj:
+        strs.append(str(o.name))
+    return ','.join(strs)
+
 @register.simple_tag
 def guess_page(cur_page,loop_num,search_str,find_list):
     offset = abs(cur_page - loop_num)

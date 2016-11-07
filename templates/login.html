@@ -1,7 +1,23 @@
 {% extends 'index.html' %}
 
 {% block page-container %}
-<form action="" method="post">{% csrf_token %}
+<div class="container">
+
+  <form class="form-signin" role="form" method="POST" action="">{% csrf_token %}
+    <h2 class="form-signin-heading">Please Sign In</h2>
+    <input name="username" class="form-control" placeholder="用户名" required autofocus>
+    <input name="password" type="password" class="form-control" placeholder="密码" required>
+    <div>
+        {% if login_err %}
+        <p style="color:red">{{ login_err }}</p>
+        {% endif %}
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+  </form>
+
+</div>
+
+<!--<form action="" method="post">{% csrf_token %}
 username: <input type="text" name="username" />
 password: <input type="password" name ="password" />
 <input type="submit" value="login"/>
@@ -10,5 +26,5 @@ password: <input type="password" name ="password" />
     <p style="color:red">{{ login_err }}</p>
     {% endif %}
 </div>
-</form>
+</form>-->
 {% endblock %}

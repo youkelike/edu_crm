@@ -21,15 +21,19 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li>
+                {% if request.user.is_authenticated %}
                 <a id="drop3" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Dropdown
+                {{ request.user }}
                 <span class="caret"></span>
-              </a>
+                </a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
                     <li role="presentation"><a role="menuitem" tabindex="-1" href="#">个人信息</a></li>
                     <li role="presentation" class="divider"></li>
-                    <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Logout</a></li>
-                  </ul>
+                    <li role="presentation"><a role="menuitem" tabindex="-1" href="/accounts/logout/">Logout</a></li>
+                </ul>
+                {% else %}
+                <a href="/accounts/login/" class="">Login</a>
+                {% endif %}
             </li>
 
           </ul>
@@ -41,8 +45,8 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-            <li class="active"><a href="{% url 'customer_list' %}">客户列表</a></li>
+          <ul class="nav nav-sidebar" id="left-menu">
+            <li><a href="{% url 'customer_list' %}">客户列表</a></li>
             <li><a href="{% url 'course_list' %}">课程列表</a></li>
             <li><a href="{% url 'school_list' %}">校区列表</a></li>
             <li><a href="{% url 'userprofile_list' %}">用户列表</a></li>
@@ -68,8 +72,22 @@
     {% block script %}
     <script>
         $(function(){
+            var pathname = location.pathname
             var search = location.search.split('&')
-            console.log(search)
+
+            arr = pathname.split('/')
+            pathname = '/'+arr[1]+'/'+arr[2]+'/'
+            console.log(pathname)
+            /*给左菜单加高亮效果*/
+            $('#left-menu a').each(function(){
+                console.log($(this).prop('href'))
+                if($(this).prop('href').indexOf(pathname)>0){
+                    $(this).parent().addClass('active')
+                }
+
+            })
+
+            /*给过滤功能加高亮效果*/
             if(search.length>1){
                 $('.panel-body').removeClass('hide')
                 for(var i=0,l=search.length;i<l;i++){

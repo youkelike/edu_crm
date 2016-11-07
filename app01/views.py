@@ -23,7 +23,7 @@ def acc_login(request):
         if user is not None:
             #登录动作
             login(request,user)
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('/crm/')
         else:
             login_err = 'Wrong username or password'
             return render(request, 'login.html',{'login_err':login_err})

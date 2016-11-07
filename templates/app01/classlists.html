@@ -57,7 +57,7 @@
             <td>{{ data.course }}</td>
             <td>{{ data.get_course_type_display }}</td>
             <td>{{ data.semester }}</td>
-            <td>{{ data.teachers }}</td>
+            <td>{{ data.teachers.select_related|show_m_2_m }}</td>
             <td>{{ data.start_date }}</td>
             <td>{{ data.graduate_date }}</td>
         </tr>
