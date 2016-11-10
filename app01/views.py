@@ -95,11 +95,22 @@ def build_search_param(request,cls):
         'actions':settings.FRONT_ACTIONS.get(cls.__name__.lower(),[]),
     }
 
-@check_permission
+def front_action_handle(request,cls):
+    print(json.loads(request.POST['data']))
+    data = json.loads(request.POST['data'])
+    if data['name'] == 'delete_select':
+        cls.objects.filter(id__in=data['ids']).delete()
+    else:
+        field_name = data['name'].split('_2_')[0]
+        field_val = data['name'].split('_2_')[1]
+        cls.objects.filter(id__in=data['ids']).update(**{field_name: field_val})
+
+
 def customers(request):
-    #post方式请求就是执行操作
+    # post方式请求就是执行操作
     if request.method == 'POST':
-        print(request.POST)
+        front_action_handle(request, models.Customer)
+        return HttpResponse('ok')
 
     #通用方法构建查询结果
     data_dic = build_search_param(request, models.Customer)
@@ -274,14 +285,7 @@ def courserecord_add(request):
 def studyrecords(request):
     # post方式请求就是执行操作
     if request.method == 'POST':
-        print(json.loads(request.POST['data']))
-        data = json.loads(request.POST['data'])
-        if data['name'] == 'delete_select':
-            models.StudyRecord.objects.filter(id__in=data['ids']).delete()
-        else:
-            field_name = data['name'].split('_2_')[0]
-            field_val = data['name'].split('_2_')[1]
-            models.StudyRecord.objects.filter(id__in=data['ids']).update(**{field_name:field_val})
+        front_action_handle(request,models.StudyRecord)
         return HttpResponse('ok')
 
     #通用方法构建查询结果

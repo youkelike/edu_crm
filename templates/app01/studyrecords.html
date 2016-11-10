@@ -68,6 +68,7 @@
 </table>
 
     <div class="panel-footer">
+        {% if actions %}
         <div class="row">
             <select name="data-action" class="form-control data-action action-select">
             {% for action in actions %}
@@ -76,6 +77,7 @@
             </select>
             <button class="form-control data-action action-ok">GO</button>{% csrf_token %}
         </div>
+        {% endif %}
         <!--整个分页功能都做成标签-->
         <nav>{% pagination_bar data_list search_str find_list %}</nav>
     </div>

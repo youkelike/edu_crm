@@ -143,5 +143,9 @@ FRONT_ACTIONS= {
                      ('score_2_0', u'成绩改为<D>'),
                      ('delete_select', u'删除'),
                      ],
-
+    'customer':[('status_2_signed',u'状态改为<已报名>'),
+                    ('status_2_graduated',u'状态改为<已毕业>'),
+                    ('status_2_dropoff',u'状态改为<已退学>'),
+                    ('delete_select', u'删除'),
+                ]
 }
