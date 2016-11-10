@@ -41,6 +41,7 @@
     <table class="table table-hover">
     <thead>
     <tr>
+        <th><input type="checkbox" name="all_ids" value=""/></th>
         <th>ID</th>
         <th>学员</th>
         <th>第几天课程</th>
@@ -53,7 +54,8 @@
     <tbody>
     {% for data in data_list %}
         <tr>
-            <td><a href="{% url 'studyrecord_detail' data.id %}">{{ data.id }}</a></td>
+            <td><input type="checkbox" name="id" value="{{ data.id }}"/> </td>
+            <td><a href="{% url 'studyrecord_detail' data.id %}">{{ forloop.counter }}</a></td>
             <td>{{ data.student }}</td>
             <td>{{ data.course_record }}</td>
             <td>{{ data.get_record_display }}</td>
@@ -64,7 +66,16 @@
     {% endfor %}
     </tbody>
 </table>
+
     <div class="panel-footer">
+        <div class="row">
+            <select name="data-action" class="form-control data-action action-select">
+            {% for action in actions %}
+                <option value="{{ action.0 }}">{{ action.1 }}</option>
+            {% endfor %}
+            </select>
+            <button class="form-control data-action action-ok">GO</button>{% csrf_token %}
+        </div>
         <!--整个分页功能都做成标签-->
         <nav>{% pagination_bar data_list search_str find_list %}</nav>
     </div>

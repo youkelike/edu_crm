@@ -4,6 +4,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 
+
 #定义在外面就不能通过各模型类取到这个变量了
 class_type_choices = (
     ('online',u'网络班'),
@@ -28,6 +29,7 @@ class UserProfile(models.Model):
             ('view_customer_info',u'可以查看客户详细信息'),
             ('edit_own_customer_info',u'可以修改自己的客户信息'),
         )
+
 
 class School(models.Model):
     name = models.CharField(u'校区名称',max_length=64,unique=True)

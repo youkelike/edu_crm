@@ -127,6 +127,21 @@ STATICFILES_DIRS = [
 
 
 FILTER_FIELDS = {
-    'Customer':['consultant_id','course_id','class_type','status','source'],#外键关联字段名后要加'_id'
+    'customer':['consultant_id','course_id','class_type','status','source'],#外键关联字段名后要加'_id'
+
+}
+
+#前端的动作，规则为(字段名_2_字段值)，只有删除操作都是统一的形式
+FRONT_ACTIONS= {
+    'studyrecord': [('record_2_late',u'上课记录改为<迟到>'),
+                     ('record_2_absence', u'上课记录改为<缺课>'),
+                     ('record_2_leave_early', u'上课记录改为<早退>'),
+                     ('score_2_90', u'成绩改为<A>'),
+                     ('score_2_80', u'成绩改为<B>'),
+                     ('score_2_60', u'成绩改为<C+>'),
+                     ('score_2_50', u'成绩改为<C>'),
+                     ('score_2_0', u'成绩改为<D>'),
+                     ('delete_select', u'删除'),
+                     ],
 
 }

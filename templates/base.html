@@ -108,6 +108,37 @@
                 }
             }
 
+            /*全选效果*/
+            $('input[name="all_ids"]').click(function(){
+                if($(this).prop('checked') == true){
+                    $('input[name="id"]').prop('checked',true)
+                }else{
+                    $('input[name="id"]').prop('checked',false)
+                }
+            });
+
+            /*可选动作*/
+            $('.action-ok').click(function(){
+                var select_action = $('.action-select').val();
+                var select_items = $('input[name="id"]:checked');
+                var select_ids = []
+                console.log(select_items.length);
+                console.log(select_action);
+                if(select_action && select_items.length>0){
+                    if(confirm('确定对选中的行执行操作？')){
+                        select_items.each(function(index,el){
+                            console.log(el.value)
+                            select_ids.push(el.value)
+                        });
+                        $.post('{% url url_alias %}',{'data':JSON.stringify({'name':select_action,'ids':select_ids}),'csrfmiddlewaretoken':$('input[name=csrfmiddlewaretoken]').val()},function(callback){
+                            window.location.href=window.location.href;
+                            if(callback=='ok') {
+
+                            }
+                        });
+                    }
+                }
+            })
         })
 
 

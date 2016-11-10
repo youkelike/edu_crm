@@ -56,9 +56,14 @@ body {
 #panel-heading{
   float:none;overflow: hidden;
 }
-  #panel-heading .search-button,#panel-heading .search-more-button{
-    padding-left: 0px;
-  }
-  .btn-toolbar{
-    margin-bottom:5px;
-  }
+#panel-heading .search-button,#panel-heading .search-more-button{
+  padding-left: 0px;
+}
+.btn-toolbar{
+  margin-bottom:5px;
+}
+
+.data-action{
+  width:auto;
+  float: left;
+}

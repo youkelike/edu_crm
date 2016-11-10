@@ -1,8 +1,9 @@
-from django.shortcuts import render,HttpResponseRedirect,redirect
+from django.shortcuts import render,HttpResponseRedirect,redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate,login,logout
 from django.core.paginator import Paginator,EmptyPage,PageNotAnInteger
 
+import json
 from app01 import models
 from app01 import forms
 from app01.permissions import check_permission
@@ -46,7 +47,7 @@ def build_search_param(request,cls):
     # 构建过滤条件
     q = Q()
     q.connector = 'AND'
-    filter_fields = settings.FILTER_FIELDS['Customer']
+    filter_fields = settings.FILTER_FIELDS.get(cls.__name__.lower(),[])
     search_str = ''
     search_val_dic = {}
     for field_name in filter_fields:
@@ -91,10 +92,15 @@ def build_search_param(request,cls):
         'search_val_dic':search_val_dic,
         'find_list':find_list,
         'url_alias':'%s_list' % cls.__name__.lower(),
+        'actions':settings.FRONT_ACTIONS.get(cls.__name__.lower(),[]),
     }
 
 @check_permission
 def customers(request):
+    #post方式请求就是执行操作
+    if request.method == 'POST':
+        print(request.POST)
+
     #通用方法构建查询结果
     data_dic = build_search_param(request, models.Customer)
 
@@ -266,6 +272,18 @@ def courserecord_add(request):
 
 
 def studyrecords(request):
+    # post方式请求就是执行操作
+    if request.method == 'POST':
+        print(json.loads(request.POST['data']))
+        data = json.loads(request.POST['data'])
+        if data['name'] == 'delete_select':
+            models.StudyRecord.objects.filter(id__in=data['ids']).delete()
+        else:
+            field_name = data['name'].split('_2_')[0]
+            field_val = data['name'].split('_2_')[1]
+            models.StudyRecord.objects.filter(id__in=data['ids']).update(**{field_name:field_val})
+        return HttpResponse('ok')
+
     #通用方法构建查询结果
     data_dic = build_search_param(request, models.StudyRecord)
 
@@ -334,6 +352,10 @@ def consultrecord_add(request):
 
 
 def classlists(request):
+    # post方式请求就是执行操作
+    if request.method == 'POST':
+        print(request.POST)
+
     #通用方法构建查询结果
     data_dic = build_search_param(request, models.ClassList)
 
