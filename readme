@@ -25,10 +25,11 @@
 * 校长、校长秘书：有所有权限
     * 对不同的表，不同的角色有不同的权限
         * customer讲师只能看，销售有全部权限，学员不可见
-        * course_record讲师有全部权限，销售、学员只能看
+        * course,course_record讲师有全部权限，销售、学员只能看
         * class_list讲师有全部权限，销售、学员只能看
+        * consult_record销售有全部权限，讲师、学员只能看
         * study_record讲师有全部权限，销售、学员只能看
-        * user_profile，school校长和校长秘书有权限
+        * user_profile,school校长和校长秘书有权限
 
 
 
