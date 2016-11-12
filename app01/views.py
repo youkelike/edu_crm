@@ -59,7 +59,7 @@ def build_search_param(request,cls):
             search_str += '&%s=%s' % (field_name, search_val)  # 用在分页功能上
 
     # 找出搜索框输入,约定变量名为：find__字段名
-    print('***GET:', request.GET)
+    print('***GET search params:', request.GET)
     find_list = []
     for f_dic in request.GET.items():
         if f_dic[0].startswith('find__') and len(f_dic[1]) > 0:
@@ -105,7 +105,7 @@ def front_action_handle(request,cls):
         field_val = data['name'].split('_2_')[1]
         cls.objects.filter(id__in=data['ids']).update(**{field_name: field_val})
 
-
+@check_permission
 def customers(request):
     # post方式请求就是执行操作
     if request.method == 'POST':
@@ -133,6 +133,7 @@ def customer_detail(request,id):
 
     return render(request,'app01/customer_detail.html',{'data_form':form})
 
+@check_permission
 def customer_add(request):
     if request.method == 'POST':
         form = forms.CustomerModelForm(request.POST)
@@ -272,8 +273,23 @@ def courserecord_detail(request,id):
 def courserecord_add(request):
     if request.method == 'POST':
         form = forms.CourseRecordModelForm(request.POST)
+        print(form.is_valid())
+        print(request.POST)
         if form.is_valid():
-            form.save()
+            #创建上课记录
+            new_cousrerecord = form.save()
+
+            #批量生成该课程中的学员上课记录
+            course_id = request.POST['course']
+            course_day_num = request.POST['day_num']
+            #找出课程下的所有学员
+            customer_objs = models.Course.objects.filter(id=course_id)[0].customer_set.select_related()
+            #创建上课记录
+            if customer_objs:
+                new_studyrecord_objs = []
+                for customer in customer_objs:
+                    new_studyrecord_objs.append(models.StudyRecord(course_record=new_cousrerecord,student=customer))
+                models.StudyRecord.objects.bulk_create(new_studyrecord_objs)
             base_url = '/'.join(request.path.split('/')[:-2])
             return redirect(base_url)
     else:

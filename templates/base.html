@@ -118,6 +118,7 @@
             });
 
             /*可选动作*/
+            {% if url_alias %}
             $('.action-ok').click(function(){
                 var select_action = $('.action-select').val();
                 var select_items = $('input[name="id"]:checked');
@@ -139,6 +140,7 @@
                     }
                 }
             })
+            {% endif %}
         })
 
 

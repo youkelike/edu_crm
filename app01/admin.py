@@ -13,7 +13,11 @@ class StudyRecordAdmin(admin.ModelAdmin):
     list_filter = ('record',)
     actions = [change_record_2_delay,]
 
-admin.site.register(models.Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('qq','source','referral_from','course','class_type','status','consultant','date')
+    list_filter = ('status','consultant')
+
+admin.site.register(models.Customer,CustomerAdmin)
 admin.site.register(models.ConsultRecord)
 admin.site.register(models.CourseRecord)
 admin.site.register(models.ClassList)

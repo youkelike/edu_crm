@@ -5,18 +5,17 @@ register = template.Library()
 
 @register.filter
 def a_upper(val):
-    print('---val from template: %s---' % val)
+    #print('---val from template: %s---' % val)
     return val.upper()
 
 @register.filter
 def guess_param(name,dic):
-    print('***guess_param:',dic)
     param = ''
     for d in dic.items():
-        print(d)
+        #print(d)
         if d[0] != name:
             param += '&%s=%s' % (d[0],d[1])
-    print('***param:',param)
+    #print('***param:',param)
     return param
 
 @register.filter

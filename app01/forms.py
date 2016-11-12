@@ -7,23 +7,23 @@ def get_filter_fields(cls):
     filter_fields = settings.FILTER_FIELDS.get(cls.__name__.lower())
     if filter_fields is None:
         return None
-    print('***filter fields:', filter_fields)
+    #print('***filter fields:', filter_fields)
     field_list = cls._meta.local_fields#取出模型对应表的字段列表
 
     filter_dic = []
     for field in field_list:
-        print('***field_name:', field.attname)
+        #print('***field_name:', field.attname)
         if field.attname in filter_fields:#只处理配置中存在的字段
             name = field.verbose_name#模型中定义的字段别名
-            print('***is relation:', bool(field.is_relation))
+            # print('***is relation:', bool(field.is_relation))
             if bool(field.is_relation):  # 如果是关联字段
                 is_relation = True
                 group_id = field.attname
                 group_name = '%s__name' % field.attname[:-3]
-                print('***group_name:', group_name)
+                #print('***group_name:', group_name)
                 #得到的是group by group_name后，取(group_id,count(group_name))两个字段组成的二元组列表
                 val_list = cls.objects.all().values_list(group_id, group_name).annotate(Count(group_name))
-                print('***relation val_dic:', val_list)
+                #print('***relation val_dic:', val_list)
             else:
                 is_relation = False
                 group_name = field.attname
@@ -37,7 +37,7 @@ def get_filter_fields(cls):
                     val_list.append(tmp_list)
 
             filter_dic.append({'name': name, 'tags': list(val_list),'is_relation':is_relation,'field_name':field.attname})
-    print('***filter_dic:', filter_dic)
+    #print('***filter_dic:', filter_dic)
     return filter_dic
 
 class CustomerModelForm(ModelForm):

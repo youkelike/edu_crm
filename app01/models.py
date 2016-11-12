@@ -25,9 +25,35 @@ class UserProfile(models.Model):
     #权限定义，与表结构本身没关系，可以写到任意表结构定义下面
     class Meta:
         permissions = (
+            #讲师只能看，销售有全部权限
             ('view_customer_list',u'可以查看客户列表'),
             ('view_customer_info',u'可以查看客户详细信息'),
             ('edit_own_customer_info',u'可以修改自己的客户信息'),
+            ('add_customer_get',u'可以进入新增客户界面'),
+            ('add_customer_post', u'可以提交新增客户信息'),
+            ('batch_own_customer_info', u'可以批量操作自己的客户信息'),
+
+            #讲师有全部权限，销售、学员只能看
+            ('view_courserecord_list', u'可以查看开课记录列表'),
+            ('batch_own_courserecord_info',u'可以批量操作自己的开课记录'),
+            ('add_courserecord_info',u'可以新增开课记录'),
+
+            #讲师有全部权限，销售、学员只能看
+            ('view_classlist_list', u'可以查看班级列表'),
+            ('edit_classlist_info', u'可以修改班级'),
+            ('batch_own_classlist_info', u'可以批量操作班级'),
+            ('add_classlist_info', u'可以新增班级'),
+
+            #讲师有全部权限，销售、学员只能看
+            ('view_studyrecord_list', u'可以查看学习记录列表'),
+            ('edit_studyrecord_info', u'可以修改学习记录'),
+            ('batch_studyrecord_info', u'可以批量操作学习记录'),
+            ('add_studyrecord_info', u'可以新增学习记录'),
+
+            #校长有权限
+            ('view_userprofile_list', u'可以查看用户列表'),
+            ('view_school_list', u'可以查看校区列表'),
+
         )
 
 
